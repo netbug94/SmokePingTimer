@@ -4,32 +4,52 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"os/signal"
+	"syscall"
 	"time"
 )
 
 func main() {
-	// Schedule the task to run every minute
-	ticker := time.NewTicker(1 * time.Minute)
+	interval := getInterval() // Get the interval from environment variable
+	ticker := time.NewTicker(interval)
 	defer ticker.Stop()
 
-	for range ticker.C {
-		runCommand("flatpak run com.google.Chrome")
+	// Setting up a channel to listen for interruptions (SIGTERM, SIGINT)
+	sig := make(chan os.Signal, 1)
+	signal.Notify(sig, syscall.SIGINT, syscall.SIGTERM)
 
-		// "flatpak run com.google.Chrome"
-		// "sudo systemctl start smokeping"
-		// "sudo -n true"
-
+	// Run loop
+	for {
+		select {
+		case <-ticker.C:
+			runCommand("flatpak run com.google.Chrome")
+		case <-sig:
+			log.Println("Shutting down...")
+			return
+		}
 	}
 }
 
 func runCommand(command string) {
-	// Splitting the command into command name and arguments
-	cmdParts := exec.Command("sh", "-c", command)
-	cmdParts.Stdout = os.Stdout // Correctly redirecting stdout
-	cmdParts.Stderr = os.Stderr // Correctly redirecting stderr
+	cmd := exec.Command("sh", "-c", command)
+	cmd.Stdout = os.Stdout // Redirecting stdout
+	cmd.Stderr = os.Stderr // Redirecting stderr
 
-	// Start and wait for the command to finish
-	if err := cmdParts.Run(); err != nil {
-		log.Fatalf("Command execution failed: %s", err)
+	if err := cmd.Run(); err != nil {
+		log.Printf("Command execution failed: %s", err)
+	} else {
+		log.Printf("Executed command successfully: %s", command)
 	}
+}
+
+func getInterval() time.Duration {
+	interval := os.Getenv("RUN_INTERVAL")
+	if interval == "" {
+		interval = "1m" // Default interval of 1 minute
+	}
+	d, err := time.ParseDuration(interval)
+	if err != nil {
+		log.Fatalf("Invalid interval format: %s", err)
+	}
+	return d
 }
