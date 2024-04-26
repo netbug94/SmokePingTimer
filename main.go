@@ -13,7 +13,12 @@ func main() {
 	defer ticker.Stop()
 
 	for range ticker.C {
-		runCommand("sudo -n true")
+		runCommand("flatpak run com.google.Chrome")
+
+		// "flatpak run com.google.Chrome"
+		// "sudo systemctl start smokeping"
+		// "sudo -n true"
+
 	}
 }
 
