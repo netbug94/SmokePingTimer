@@ -1,8 +1,10 @@
+package main
+
 import (
-	"os/exec"
-	"os"
-	"time"
 	"log"
+	"os"
+	"os/exec"
+	"time"
 )
 
 func main() {
