@@ -22,7 +22,7 @@ func main() {
 	for {
 		select {
 		case <-ticker.C:
-			runCommand("flatpak run com.google.Chrome")
+			runCommand("sudo -n true")
 		case <-sig:
 			log.Println("Shutting down...")
 			return
