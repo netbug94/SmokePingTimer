@@ -1,31 +1,16 @@
-import androidx.compose.desktop.ui.tooling.preview.Preview
-import androidx.compose.material.Button
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.window.Window
-import androidx.compose.ui.window.application
+package org.example
 
-@Composable
-@Preview
-fun App() {
-    var text by remember { mutableStateOf("Hello, World!") }
+import org.example.RunSmoke.runCommand
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 
-    MaterialTheme {
-        Button(onClick = {
-            text = "Hello, Desktop!"
-        }) {
-            Text(text)
-        }
-    }
-}
+fun main() {
+    val executor = Executors.newSingleThreadScheduledExecutor()
 
-fun main() = application {
-    Window(onCloseRequest = ::exitApplication) {
-        App()
-    }
+    val task = Runnable { runCommand("sudo -n true") }
+    // runCommand("flatpak run com.google.Chrome") }
+    // runCommand("sudo systemctl start smokeping")
+
+    executor.scheduleAtFixedRate(task, 0, 1, TimeUnit.MINUTES)
+
 }
