@@ -1,16 +1,19 @@
 package main
 
 import (
+	"bufio"
+	"fmt"
 	"log"
 	"os"
 	"os/exec"
 	"os/signal"
+	"strconv"
 	"syscall"
 	"time"
 )
 
 func main() {
-	interval := getInterval() // Value returned by a getInterval function
+	interval := getInterval() // Value returned by a getInterval function, now includes user input
 	ticker := time.NewTicker(interval)
 	defer ticker.Stop()
 
@@ -44,15 +47,19 @@ func runCommand(command string) {
 }
 
 func getInterval() time.Duration {
-	const defaultInterval = 10080 * time.Minute // Time between loops
-
-	intervalStr := os.Getenv("RUN_INTERVAL")
-	if intervalStr == "" {
-		return defaultInterval
-	}
-	duration, err := time.ParseDuration(intervalStr)
+	reader := bufio.NewReader(os.Stdin)
+	fmt.Print("Enter the interval in minutes: ")
+	input, err := reader.ReadString('\n')
 	if err != nil {
-		log.Fatalf("Invalid interval format: %s", err)
+		log.Fatalf("Failed to read from stdin: %s", err)
 	}
-	return duration
+
+	// Convert input to an integer
+	minutes, err := strconv.Atoi(input[:len(input)-1]) // Remove newline character
+	if err != nil {
+		log.Fatalf("Invalid input, not a number: %s", err)
+	}
+
+	// Convert minutes to Duration
+	return time.Duration(minutes) * time.Minute
 }
