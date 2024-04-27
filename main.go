@@ -10,19 +10,19 @@ import (
 )
 
 func main() {
-	interval := getInterval() // Get the interval from environment variable
+	interval := getInterval() // Value returned by a getInterval function
 	ticker := time.NewTicker(interval)
 	defer ticker.Stop()
 
-	// Setting up a channel to listen for interruptions (SIGTERM, SIGINT)
+	// Catches interruptions
 	sig := make(chan os.Signal, 1)
 	signal.Notify(sig, syscall.SIGINT, syscall.SIGTERM)
 
-	// Run loop
+	// Loop
 	for {
 		select {
 		case <-ticker.C:
-			runCommand("sudo -n true")
+			runCommand("sudo -n true") // Command to be run
 		case <-sig:
 			log.Println("Shutting down...")
 			return
@@ -32,8 +32,9 @@ func main() {
 
 func runCommand(command string) {
 	cmd := exec.Command("sh", "-c", command)
-	cmd.Stdout = os.Stdout // Redirecting stdout
-	cmd.Stderr = os.Stderr // Redirecting stderr
+	// Redirect the output and error streams to your screen:
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
 
 	if err := cmd.Run(); err != nil {
 		log.Printf("Command execution failed: %s", err)
@@ -43,9 +44,12 @@ func runCommand(command string) {
 }
 
 func getInterval() time.Duration {
+	const day = 24 * time.Hour // 24 hours
+	defaultInterval := 7 * day // 7 x 24...
+
 	interval := os.Getenv("RUN_INTERVAL")
 	if interval == "" {
-		interval = "1m" // Default interval of 1 minute
+		interval = defaultInterval.String()
 	}
 	d, err := time.ParseDuration(interval)
 	if err != nil {
