@@ -17,6 +17,9 @@ func main() {
 	ticker := time.NewTicker(interval)
 	defer ticker.Stop()
 
+	// Runs command immediately before starting the loop
+	runCommand("sudo -n true")
+
 	// Catches interruptions
 	sig := make(chan os.Signal, 1)
 	signal.Notify(sig, syscall.SIGINT, syscall.SIGTERM)
@@ -25,7 +28,7 @@ func main() {
 	for {
 		select {
 		case <-ticker.C:
-			runCommand("sudo -n true") // Command to be run
+			runCommand("sudo -n true") // Command to be run again at each interval
 		case <-sig:
 			log.Println("Shutting down...")
 			return
