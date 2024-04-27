@@ -18,7 +18,7 @@ func main() {
 	defer ticker.Stop()
 
 	// Runs command immediately before starting the loop
-	runCommand("sudo -n true")
+	runCommand("sudo systemctl restart smokeping")
 
 	// Catches interruptions
 	sig := make(chan os.Signal, 1)
