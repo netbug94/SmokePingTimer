@@ -44,16 +44,15 @@ func runCommand(command string) {
 }
 
 func getInterval() time.Duration {
-	const day = 24 * time.Hour // 24 hours
-	defaultInterval := 7 * day // 7 x 24...
+	const defaultInterval = 10080 * time.Minute // Time between loops
 
-	interval := os.Getenv("RUN_INTERVAL")
-	if interval == "" {
-		interval = defaultInterval.String()
+	intervalStr := os.Getenv("RUN_INTERVAL")
+	if intervalStr == "" {
+		return defaultInterval
 	}
-	d, err := time.ParseDuration(interval)
+	duration, err := time.ParseDuration(intervalStr)
 	if err != nil {
 		log.Fatalf("Invalid interval format: %s", err)
 	}
-	return d
+	return duration
 }
