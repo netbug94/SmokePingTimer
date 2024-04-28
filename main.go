@@ -28,7 +28,7 @@ func main() {
 	for {
 		select {
 		case <-ticker.C:
-			runCommand("sudo -n true") // Command to be run again at each interval
+			runCommand("sudo systemctl restart smokeping") // Command to be run again at each interval
 		case <-sig:
 			log.Println("Shutting down...")
 			return
