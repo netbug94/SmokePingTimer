@@ -1,3 +1,5 @@
+# SmokePing App has been overloading and crashing in the latest versions of libreNMS integration, This app runs systemctl Smokeping every week to keep it from happening.
+
 # How to Add an Exemption to sudo
 
 Follow these steps to allow a specific user to execute a command without a password prompt using `sudo`.
